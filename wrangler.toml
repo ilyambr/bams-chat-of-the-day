@@ -8,3 +8,7 @@ binding = "ASSETS"
 [[routes]]
 pattern = "ilyambr.com/bams/chat*"
 zone_name = "ilyambr.com"
+
+[[routes]]
+pattern = "www.ilyambr.com/bams/chat*"
+zone_name = "ilyambr.com"
