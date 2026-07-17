@@ -5,6 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/bams/chat/',
   plugins: [react()],
+  build: {
+    outDir: 'dist/bams/chat',
+    emptyOutDir: true
+  },
   server: {
     proxy: {
       '/youtube-live-chat': {

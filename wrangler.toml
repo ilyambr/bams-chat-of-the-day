@@ -1,0 +1,10 @@
+name = "bams-chat"
+compatibility_date = "2024-01-01"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[[routes]]
+pattern = "ilyambr.com/bams/chat*"
+zone_name = "ilyambr.com"
