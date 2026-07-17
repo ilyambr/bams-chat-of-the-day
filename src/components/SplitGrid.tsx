@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Columns, Rows, Trash2, Check, RefreshCw, ChevronDown } from 'lucide-react';
+import { Columns, Rows, Trash2, Check, RefreshCw } from 'lucide-react';
 import type { LayoutNode, Split, SplitType, UserSettings } from '../types/chat';
 import { TwitchCustomChat } from './TwitchCustomChat';
 import { YoutubeCustomChat } from './YoutubeCustomChat';
@@ -146,103 +146,63 @@ const ServiceDropdown: React.FC<ServiceDropdownProps> = ({ value, onChange }) =>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-[11px] rounded px-2.5 py-1 transition-all outline-none"
+        className="flex items-center justify-center p-1 rounded hover:bg-slate-900 transition-colors outline-none cursor-pointer"
+        title="Change Service / Mode"
       >
-        <span>Service:</span>
-        <span className="flex items-center gap-1 font-bold text-slate-100">
-          {isTwitch ? (
-            <>
-              <TwitchIcon className="w-3.5 h-3.5 text-[#9146FF]" />
-              <span>Twitch</span>
-            </>
-          ) : (
-            <>
-              <YoutubeIcon className="w-3.5 h-3.5 text-[#FF0000]" />
-              <span>YouTube</span>
-            </>
-          )}
-        </span>
-        <span className="text-[9px] bg-slate-800 text-slate-400 px-1 py-0.5 rounded leading-none">
-          {isCustom ? 'Custom' : 'Embed'}
-        </span>
-        <ChevronDown className="w-3 h-3 text-slate-500" />
+        {isTwitch ? (
+          <TwitchIcon className="w-4.5 h-4.5 text-[#9146FF]" />
+        ) : (
+          <YoutubeIcon className="w-4.5 h-4.5 text-[#FF0000]" />
+        )}
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 mt-1 w-52 bg-slate-950 border border-slate-800 rounded-lg shadow-2xl z-50 p-2.5 flex flex-col gap-2.5 animate-fade-in">
-          {/* Service Section */}
-          <div>
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Service
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  handleSelectService('twitch');
-                }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-xs font-semibold transition-all border ${
-                  isTwitch
-                    ? 'bg-[#9146FF]/10 border-[#9146FF] text-white shadow-lg shadow-[#9146FF]/10'
-                    : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-slate-200'
-                }`}
-              >
-                <TwitchIcon className={`w-3.5 h-3.5 ${isTwitch ? 'text-[#9146FF]' : 'text-slate-400'}`} />
-                <span>Twitch</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  handleSelectService('youtube');
-                }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-xs font-semibold transition-all border ${
-                  isYoutube
-                    ? 'bg-[#FF0000]/10 border-[#FF0000] text-white shadow-lg shadow-[#FF0000]/10'
-                    : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-slate-200'
-                }`}
-              >
-                <YoutubeIcon className={`w-3.5 h-3.5 ${isYoutube ? 'text-[#FF0000]' : 'text-slate-400'}`} />
-                <span>YouTube</span>
-              </button>
-            </div>
+        <div className="absolute left-0 mt-1 w-36 bg-slate-950 border border-slate-800 rounded-md shadow-2xl z-50 p-1.5 flex flex-col gap-1.5 animate-fade-in">
+          {/* Service logos in a box */}
+          <div className="flex bg-slate-900 border border-slate-800 rounded p-0.5">
+            <button
+              type="button"
+              onClick={() => handleSelectService('twitch')}
+              className={`flex-1 flex items-center justify-center py-1 rounded transition-all cursor-pointer ${
+                isTwitch ? 'bg-[#9146FF]/20 text-[#9146FF]' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <TwitchIcon className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelectService('youtube')}
+              className={`flex-1 flex items-center justify-center py-1 rounded transition-all cursor-pointer ${
+                isYoutube ? 'bg-[#FF0000]/20 text-[#FF0000]' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <YoutubeIcon className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-slate-900"></div>
-
-          {/* Mode Section */}
-          <div>
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Type / Mode
-            </div>
-            <div className="flex flex-col gap-1.5">
+          {/* Mode side-by-side */}
+          <div className="flex items-center justify-between gap-1 p-0.5">
+            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-wider select-none">
+              mode
+            </span>
+            <div className="flex bg-slate-900 border border-slate-800 rounded p-0.5">
               <button
                 type="button"
-                onClick={() => {
-                  handleSelectMode('custom');
-                }}
-                className={`flex items-center justify-between py-1.5 px-2.5 rounded text-left text-xs font-medium transition-all border ${
-                  isCustom
-                    ? 'bg-indigo-600/10 border-indigo-500 text-indigo-200 font-bold'
-                    : 'bg-slate-900/20 border-transparent text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                onClick={() => handleSelectMode('custom')}
+                className={`px-1.5 py-0.5 text-[9px] font-bold rounded transition-all cursor-pointer ${
+                  isCustom ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
-                <span>Custom Chat</span>
-                {isCustom && <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>}
+                custom
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  handleSelectMode('embed');
-                }}
-                className={`flex items-center justify-between py-1.5 px-2.5 rounded text-left text-xs font-medium transition-all border ${
-                  isEmbed
-                    ? 'bg-indigo-600/10 border-indigo-500 text-indigo-200 font-bold'
-                    : 'bg-slate-900/20 border-transparent text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                onClick={() => handleSelectMode('embed')}
+                className={`px-1.5 py-0.5 text-[9px] font-bold rounded transition-all cursor-pointer ${
+                  isEmbed ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
-                <span>Embedded Chat</span>
-                {isEmbed && <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>}
+                embed
               </button>
             </div>
           </div>
