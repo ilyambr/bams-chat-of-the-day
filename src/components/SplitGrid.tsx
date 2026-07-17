@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Columns, Rows, Trash2, Check, RefreshCw } from 'lucide-react';
 import type { LayoutNode, Split, SplitType, UserSettings } from '../types/chat';
 import { TwitchCustomChat } from './TwitchCustomChat';
@@ -105,6 +105,11 @@ const SplitFrame: React.FC<SplitFrameProps> = ({
   const [channelInput, setChannelInput] = useState(split?.channel || '');
   const [isEditingChannel, setIsEditingChannel] = useState(!split?.channel);
 
+  useEffect(() => {
+    setChannelInput(split?.channel || '');
+    setIsEditingChannel(!split?.channel);
+  }, [split?.channel]);
+
   if (!split) return null;
 
   const handleChannelSubmit = (e: React.FormEvent) => {
@@ -113,9 +118,18 @@ const SplitFrame: React.FC<SplitFrameProps> = ({
     setIsEditingChannel(false);
   };
 
+  const handleBlur = () => {
+    const trimmed = channelInput.trim();
+    if (trimmed !== (split?.channel || '')) {
+      onChangeChannel(splitId, trimmed);
+    }
+    if (trimmed) {
+      setIsEditingChannel(false);
+    }
+  };
+
   const handleSplitTypeChange = (type: SplitType) => {
     onChangeSplitType(splitId, type);
-    // Auto-focus channel input for embeds/custom chats if type changes
     setIsEditingChannel(true);
   };
 
@@ -143,6 +157,7 @@ const SplitFrame: React.FC<SplitFrameProps> = ({
                 type="text"
                 value={channelInput}
                 onChange={(e) => setChannelInput(e.target.value)}
+                onBlur={handleBlur}
                 placeholder={
                   split.type.startsWith('youtube') 
                     ? 'Video ID or URL...' 
