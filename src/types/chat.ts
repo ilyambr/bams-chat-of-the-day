@@ -56,4 +56,5 @@ export interface UserSettings {
   enableFfz: boolean;
   maxMessages: number;
   startMerged: boolean;
+  ignoredUsers: string[];
 }

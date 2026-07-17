@@ -100,7 +100,12 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
             const { messages: newMsgs, nextContinuation, timeoutMs } = parseYoutubeActions(data);
             
             if (newMsgs.length > 0) {
-              const filteredNew = newMsgs.filter(m => !seenIdsRef.current.has(m.id));
+              const filteredNew = newMsgs.filter(m => {
+                if (seenIdsRef.current.has(m.id)) return false;
+                const ignoredUsers = settings.ignoredUsers || [];
+                if (ignoredUsers.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
+                return true;
+              });
               for (const msg of filteredNew) {
                 seenIdsRef.current.add(msg.id);
                 dripQueueRef.current.push(msg);

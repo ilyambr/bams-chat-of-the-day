@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Settings, Sliders, MessageSquare, ShieldCheck, Heart } from 'lucide-react';
+import { X, Settings, Sliders, MessageSquare, ShieldCheck, Heart, UserX } from 'lucide-react';
 import type { UserSettings } from '../types/chat';
 
 interface SettingsModalProps {
@@ -15,9 +15,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   settings,
   onSave,
 }) => {
-  const [activeTab, setActiveTab] = useState<'general' | 'emotes' | 'highlights'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'emotes' | 'highlights' | 'ignore'>('general');
   const [localSettings, setLocalSettings] = useState<UserSettings>({ ...settings });
   const [highlightInput, setHighlightInput] = useState(settings.highlightWords.join(', '));
+  const [ignoreInput, setIgnoreInput] = useState((settings.ignoredUsers || []).join(', '));
 
   if (!isOpen) return null;
 
@@ -41,9 +42,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       .map((w) => w.trim().toLowerCase())
       .filter((w) => w.length > 0);
     
+    const ignored = ignoreInput
+      .split(',')
+      .map((w) => w.trim().toLowerCase())
+      .filter((w) => w.length > 0);
+    
     const finalSettings = {
       ...localSettings,
       highlightWords: highlights,
+      ignoredUsers: ignored,
     };
     
     onSave(finalSettings);
@@ -102,6 +109,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <MessageSquare className="w-4 h-4" />
               Highlights
+            </button>
+            <button
+              onClick={() => setActiveTab('ignore')}
+              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                activeTab === 'ignore'
+                  ? 'bg-red-700 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              <UserX className="w-4 h-4" />
+              Ignore
             </button>
           </div>
 
@@ -299,6 +317,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   />
                   <p className="text-xs text-slate-500 mt-2">
                     Separate keywords with commas. If these words appear in a chat message, the message background will glow to grab your attention.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'ignore' && (
+              <div className="flex flex-col gap-4">
+                <div className="border border-red-900/40 bg-red-950/20 rounded-lg p-4 mb-2 flex items-start gap-3">
+                  <UserX className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                  <div className="text-xs text-slate-400 leading-relaxed">
+                    Messages from ignored users will be completely hidden in both Twitch and YouTube custom chats. Usernames are case-insensitive.
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Ignored Users
+                  </label>
+                  <textarea
+                    rows={5}
+                    value={ignoreInput}
+                    onChange={(e) => setIgnoreInput(e.target.value)}
+                    placeholder="e.g. spammer123, botname, annoyinguser"
+                    className="w-full bg-slate-950 border border-red-900/50 focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-600 outline-none resize-none"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">
+                    Separate usernames with commas. Their messages will not appear in chat.
                   </p>
                 </div>
               </div>

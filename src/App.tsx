@@ -19,7 +19,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   enableBttv: true,
   enableFfz: true,
   maxMessages: 150,
-  startMerged: false
+  startMerged: false,
+  ignoredUsers: []
 };
 
 const DEFAULT_SPLITS: Record<string, Split> = {

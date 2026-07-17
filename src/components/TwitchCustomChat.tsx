@@ -63,6 +63,12 @@ export const TwitchCustomChat: React.FC<TwitchCustomChatProps> = ({ channel, set
         msg.displayName.toLowerCase().includes(word.toLowerCase())
       );
 
+      // Skip messages from ignored users
+      const ignoredUsers = settings.ignoredUsers || [];
+      if (ignoredUsers.some(u => u === msg.username.toLowerCase() || u === msg.displayName.toLowerCase())) {
+        return;
+      }
+
       const parsedMsg = {
         ...msg,
         parts: parsedParts,
