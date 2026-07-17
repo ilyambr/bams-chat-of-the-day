@@ -150,39 +150,39 @@ const ServiceDropdown: React.FC<ServiceDropdownProps> = ({ value, onChange }) =>
         title="Change Service / Mode"
       >
         {isTwitch ? (
-          <TwitchIcon className="w-4.5 h-4.5 text-[#9146FF]" />
+          <TwitchIcon className="w-5 h-5 text-white hover:text-slate-300" />
         ) : (
-          <YoutubeIcon className="w-4.5 h-4.5 text-[#FF0000]" />
+          <YoutubeIcon className="w-5 h-5 text-white hover:text-slate-300" />
         )}
       </button>
 
       {isOpen && (
         <div className="absolute left-0 mt-1 w-36 bg-slate-950 border border-slate-800 rounded-md shadow-2xl z-50 p-1.5 flex flex-col gap-1.5 animate-fade-in">
           {/* Service logos in a box */}
-          <div className="flex bg-slate-900 border border-slate-800 rounded p-0.5">
+          <div className="flex bg-slate-900 border border-slate-800 rounded p-0.5 gap-0.5">
             <button
               type="button"
               onClick={() => handleSelectService('twitch')}
-              className={`flex-1 flex items-center justify-center py-1 rounded transition-all cursor-pointer ${
-                isTwitch ? 'bg-[#9146FF]/20 text-[#9146FF]' : 'text-slate-500 hover:text-slate-300'
+              className={`flex-1 flex items-center justify-center py-2 rounded transition-all cursor-pointer ${
+                isTwitch ? 'bg-[#9146FF] text-white shadow-md shadow-[#9146FF]/20' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-800'
               }`}
             >
-              <TwitchIcon className="w-3.5 h-3.5" />
+              <TwitchIcon className="w-4.5 h-4.5" />
             </button>
             <button
               type="button"
               onClick={() => handleSelectService('youtube')}
-              className={`flex-1 flex items-center justify-center py-1 rounded transition-all cursor-pointer ${
-                isYoutube ? 'bg-[#FF0000]/20 text-[#FF0000]' : 'text-slate-500 hover:text-slate-300'
+              className={`flex-1 flex items-center justify-center py-2 rounded transition-all cursor-pointer ${
+                isYoutube ? 'bg-[#FF0000] text-white shadow-md shadow-[#FF0000]/20' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-800'
               }`}
             >
-              <YoutubeIcon className="w-3.5 h-3.5" />
+              <YoutubeIcon className="w-4.5 h-4.5" />
             </button>
           </div>
 
           {/* Mode side-by-side */}
           <div className="flex items-center justify-between gap-1 p-0.5">
-            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-wider select-none">
+            <span className="text-[8px] font-normal text-slate-500 lowercase select-none">
               mode
             </span>
             <div className="flex bg-slate-900 border border-slate-800 rounded p-0.5">
