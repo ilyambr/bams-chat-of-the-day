@@ -136,7 +136,15 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
         console.error('YouTube initial resolution failed:', err);
         if (active) {
           setChannelStatus('error');
-          setError(err.message || 'Could not connect to YouTube Chat.');
+          setError((err.message || 'Could not connect to YouTube Chat.') + ' — retrying in 1 min...');
+          // Retry every 60 seconds in case they go live
+          pollTimeout = setTimeout(() => {
+            if (active) {
+              setChannelStatus('connecting');
+              setError(null);
+              startChatResolving();
+            }
+          }, 60000);
         }
       }
     };
