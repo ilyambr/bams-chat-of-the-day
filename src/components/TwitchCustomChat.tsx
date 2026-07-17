@@ -37,6 +37,9 @@ export const TwitchCustomChat: React.FC<TwitchCustomChatProps> = ({ channel, set
   const [channelStatus, setChannelStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
   const scrollRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
+  const ignoredUsersRef = useRef<string[]>(settings.ignoredUsers || []);
+
+  useEffect(() => { ignoredUsersRef.current = (settings.ignoredUsers || []).map(u => u.toLowerCase()); }, [settings.ignoredUsers]);
 
   // Clean channel name
   const cleanChannel = useMemo(() => channel.toLowerCase().trim(), [channel]);
@@ -64,8 +67,7 @@ export const TwitchCustomChat: React.FC<TwitchCustomChatProps> = ({ channel, set
       );
 
       // Skip messages from ignored users
-      const ignoredUsers = settings.ignoredUsers || [];
-      if (ignoredUsers.some(u => u === msg.username.toLowerCase() || u === msg.displayName.toLowerCase())) {
+      if (ignoredUsersRef.current.some(u => u === msg.username.toLowerCase() || u === msg.displayName.toLowerCase())) {
         return;
       }
 

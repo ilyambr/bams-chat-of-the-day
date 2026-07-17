@@ -25,8 +25,10 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
   const dripTimeoutRef = useRef<number>(0);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const maxMessagesRef = useRef(settings.maxMessages);
+  const ignoredUsersRef = useRef<string[]>((settings.ignoredUsers || []).map(u => u.toLowerCase()));
 
   useEffect(() => { maxMessagesRef.current = settings.maxMessages; }, [settings.maxMessages]);
+  useEffect(() => { ignoredUsersRef.current = (settings.ignoredUsers || []).map(u => u.toLowerCase()); }, [settings.ignoredUsers]);
 
   const cleanChannel = useMemo(() => channel.trim(), [channel]);
 
@@ -102,8 +104,7 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
             if (newMsgs.length > 0) {
               const filteredNew = newMsgs.filter(m => {
                 if (seenIdsRef.current.has(m.id)) return false;
-                const ignoredUsers = settings.ignoredUsers || [];
-                if (ignoredUsers.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
+                if (ignoredUsersRef.current.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
                 return true;
               });
               for (const msg of filteredNew) {
