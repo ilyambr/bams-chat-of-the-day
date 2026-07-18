@@ -86,13 +86,23 @@ export const resolveYoutubeChannelToVideoId = async (handle: string): Promise<st
     throw new Error('No active live stream found for this channel. Make sure they are currently live on YouTube!');
   }
 
-  // 1. Try to find the canonical watch URL (sometimes it exists if not blocked)
+  // 1. Try to extract from currentVideoEndpoint (most reliable for active stream)
+  const currentVideoIdx = html.indexOf('"currentVideoEndpoint"');
+  if (currentVideoIdx !== -1) {
+    const chunk = html.slice(currentVideoIdx, currentVideoIdx + 1000);
+    const match = chunk.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  // 2. Try to find the canonical watch URL (sometimes it exists if not blocked)
   const canonicalMatch = html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})"/);
   if (canonicalMatch && canonicalMatch[1] && canonicalMatch[1] !== 'undefined') {
     return canonicalMatch[1];
   }
 
-  // 2. Scan for video IDs that have a live badge or overlay near them in the HTML
+  // 3. Scan for video IDs that have a live badge or overlay near them in the HTML
   const videoIdMatches = [...html.matchAll(/"videoId":"([a-zA-Z0-9_-]{11})"/g)];
   for (const m of videoIdMatches) {
     const videoId = m[1];
@@ -113,7 +123,7 @@ export const resolveYoutubeChannelToVideoId = async (handle: string): Promise<st
     }
   }
 
-  // 3. Fallback: first video ID matched
+  // 4. Fallback: first video ID matched
   const videoIdMatch = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
   if (videoIdMatch && videoIdMatch[1]) return videoIdMatch[1];
   
