@@ -275,7 +275,7 @@ const SplitFrame: React.FC<SplitFrameProps> = ({
                 onBlur={handleBlur}
                 placeholder={
                   split.type.startsWith('youtube') 
-                    ? 'Video ID or URL...' 
+                    ? 'Username or URL...' 
                     : 'Twitch Channel...'
                 }
                 className="bg-slate-950 border border-slate-800 text-xs text-white rounded px-2 py-0.5 max-w-[150px] outline-none focus:border-indigo-500"
