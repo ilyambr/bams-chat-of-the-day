@@ -21,7 +21,7 @@ const getFallbackBadgeUrl = (name: string): string => {
     case 'subscriber':
       return 'https://static-cdn.jtvnw.net/badges/v1/5d9f2208-5dd8-11e7-8513-2ff4adfae661/1'; // Default star
     case 'premium':
-      return 'https://static-cdn.jtvnw.net/badges/v1/bbbe7311-1241-41d2-8b0e-4352000d97f3/1';
+      return 'https://static-cdn.jtvnw.net/badges/v1/a1ddadeb-dbbe-4fc4-9222-d40270b912a2/1';
     case 'turbo':
       return 'https://static-cdn.jtvnw.net/badges/v1/0599318a-dbf7-418b-bb66-b3136e0b4a95/1';
     case 'partner':
