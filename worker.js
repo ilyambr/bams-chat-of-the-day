@@ -56,7 +56,7 @@ export default {
       }
 
       try {
-        const response = await fetch(targetUrl, init);
+        const response = await fetch('https://bams-clips.onrender.com/api/youtube-proxy?url=' + encodeURIComponent(targetUrl), init);
         
         // Construct clean response headers
         const responseHeaders = new Headers();
