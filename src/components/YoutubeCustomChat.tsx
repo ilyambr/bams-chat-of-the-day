@@ -92,6 +92,7 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
         setChannelStatus('connected');
 
         let currentContinuation = initialContinuation;
+        let isFirstPoll = true;
 
         const pollNext = async () => {
           if (!active) return;
@@ -102,25 +103,34 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
             const { messages: newMsgs, nextContinuation, timeoutMs } = parseYoutubeActions(data);
             
             if (newMsgs.length > 0) {
-              const filteredNew = newMsgs.filter(m => {
-                if (seenIdsRef.current.has(m.id)) return false;
-                if (ignoredUsersRef.current.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
-                return true;
-              });
-              for (const msg of filteredNew) {
-                seenIdsRef.current.add(msg.id);
-                dripQueueRef.current.push(msg);
-              }
-              // Cap seen IDs so the set doesn't grow forever
-              if (seenIdsRef.current.size > 2000) {
-                const arr = Array.from(seenIdsRef.current);
-                seenIdsRef.current = new Set(arr.slice(arr.length - 1000));
-              }
-              // Kick off drip processor if not already running
-              if (!dripActiveRef.current && filteredNew.length > 0) {
-                processDripRef.current();
+              if (isFirstPoll) {
+                // Skip history scrollback on initial load, but register their IDs as seen
+                for (const msg of newMsgs) {
+                  seenIdsRef.current.add(msg.id);
+                }
+              } else {
+                const filteredNew = newMsgs.filter(m => {
+                  if (seenIdsRef.current.has(m.id)) return false;
+                  if (ignoredUsersRef.current.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
+                  return true;
+                });
+                for (const msg of filteredNew) {
+                  seenIdsRef.current.add(msg.id);
+                  dripQueueRef.current.push(msg);
+                }
+                // Cap seen IDs so the set doesn't grow forever
+                if (seenIdsRef.current.size > 2000) {
+                  const arr = Array.from(seenIdsRef.current);
+                  seenIdsRef.current = new Set(arr.slice(arr.length - 1000));
+                }
+                // Kick off drip processor if not already running
+                if (!dripActiveRef.current && filteredNew.length > 0) {
+                  processDripRef.current();
+                }
               }
             }
+
+            isFirstPoll = false;
 
             if (nextContinuation) {
               currentContinuation = nextContinuation;
@@ -164,7 +174,7 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
       dripQueueRef.current = [];
       dripActiveRef.current = false;
     };
-  }, [cleanChannel, settings.maxMessages]);
+  }, [cleanChannel]);
 
   // Auto-scroll to bottom on every new message (same as Twitch)
   useEffect(() => {
