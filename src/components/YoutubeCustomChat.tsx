@@ -57,6 +57,8 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
   useEffect(() => {
     if (!cleanChannel) return;
 
+    const connectionStartTime = Date.now();
+
     setMessages([]);
     seenIdsRef.current = new Set();
     dripQueueRef.current = [];
@@ -92,7 +94,6 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
         setChannelStatus('connected');
 
         let currentContinuation = initialContinuation;
-        let isFirstPoll = true;
 
         const pollNext = async () => {
           if (!active) return;
@@ -103,34 +104,27 @@ export const YoutubeCustomChat: React.FC<YoutubeCustomChatProps> = ({ channel, s
             const { messages: newMsgs, nextContinuation, timeoutMs } = parseYoutubeActions(data);
             
             if (newMsgs.length > 0) {
-              if (isFirstPoll) {
-                // Skip history scrollback on initial load, but register their IDs as seen
-                for (const msg of newMsgs) {
-                  seenIdsRef.current.add(msg.id);
-                }
-              } else {
-                const filteredNew = newMsgs.filter(m => {
-                  if (seenIdsRef.current.has(m.id)) return false;
-                  if (ignoredUsersRef.current.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
-                  return true;
-                });
-                for (const msg of filteredNew) {
-                  seenIdsRef.current.add(msg.id);
-                  dripQueueRef.current.push(msg);
-                }
-                // Cap seen IDs so the set doesn't grow forever
-                if (seenIdsRef.current.size > 2000) {
-                  const arr = Array.from(seenIdsRef.current);
-                  seenIdsRef.current = new Set(arr.slice(arr.length - 1000));
-                }
-                // Kick off drip processor if not already running
-                if (!dripActiveRef.current && filteredNew.length > 0) {
-                  processDripRef.current();
-                }
+              const filteredNew = newMsgs.filter(m => {
+                if (seenIdsRef.current.has(m.id)) return false;
+                if (ignoredUsersRef.current.some(u => u === m.displayName.toLowerCase() || u === m.username.toLowerCase())) return false;
+                // Discard messages sent before we loaded the chat (with a 5-second buffer for clock drift)
+                if (m.timestampRaw < connectionStartTime - 5000) return false;
+                return true;
+              });
+              for (const msg of filteredNew) {
+                seenIdsRef.current.add(msg.id);
+                dripQueueRef.current.push(msg);
+              }
+              // Cap seen IDs so the set doesn't grow forever
+              if (seenIdsRef.current.size > 2000) {
+                const arr = Array.from(seenIdsRef.current);
+                seenIdsRef.current = new Set(arr.slice(arr.length - 1000));
+              }
+              // Kick off drip processor if not already running
+              if (!dripActiveRef.current && filteredNew.length > 0) {
+                processDripRef.current();
               }
             }
-
-            isFirstPoll = false;
 
             if (nextContinuation) {
               currentContinuation = nextContinuation;

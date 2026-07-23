@@ -21,6 +21,7 @@ export interface YoutubeChatMessage {
   message: string;
   parts: YoutubeChatPart[];
   timestamp: string;
+  timestampRaw: number;
   badges: { name: string; url?: string }[];
   isOwner: boolean;
   isModerator: boolean;
@@ -287,6 +288,7 @@ export const parseYoutubeActions = (data: any): { messages: YoutubeChatMessage[]
     
     const usec = parseInt(renderer.timestampUsec || '0');
     const date = usec ? new Date(usec / 1000) : new Date();
+    const timestampRaw = date.getTime();
     const timestampStr = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     
     messages.push({
@@ -297,6 +299,7 @@ export const parseYoutubeActions = (data: any): { messages: YoutubeChatMessage[]
       message: fullText,
       parts,
       timestamp: timestampStr,
+      timestampRaw,
       badges,
       isOwner,
       isModerator,
